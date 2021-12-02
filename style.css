@@ -1,13 +1,17 @@
+
 .flex-container{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     width: 100vw;
     height: 100vh;
-    background-color:royalblue;
+    box-sizing: border-box; 
+    background-color:white;
 }
+
 
 .game-matrix-grid{
     display: grid;
+    margin-left: 30vmin;
     background-color: white;
     width: 100vmin;
     height: 100vmin;
@@ -15,7 +19,24 @@
     grid-template-rows: repeat(20, 1fr);  
 }
 
+.empty
+{
+    background-color: white;
+    
+}
+
+.side-bar-flexColumn{
+    display: flex;
+    background-color: black;
+    width: 20vmin;
+    height: 100vmin;
+    justify-items: center;
+    flex-direction: column;
+    align-items: center;
+}
+
 .sky{
+    
     background-color: lightblue;
 }
 
@@ -23,28 +44,69 @@
     background-color: white;
 }
 .grass{
-    background-color:yellow;
+    background-image: url('./images/grass.png');
+    background-size: cover;
+   
 }
 
 .tree{
-background-color: green;
+background-image: url('./images/tree-leaves.png');
+background-size: cover;
+
 }
 
 .trunk{
-    background-color: brown;
+    background-image: url('./images/wood.png');
+    background-size: cover;
+    
 }
 
 .rock{
-    background-color: gray;
+    background-image: url('./images/rock.png');
+    background-size: cover;
 }
 
 .ground{
-    background-color: rgb(119, 8, 8);
+
+    background-image: url('./images/ground.jpg');
+    background-size: cover;
 }
 
-.side-bar-flexColumn{
+.tool-box{
+    display: block;
+    margin-top: 2vmin;
+    width:10vmin; 
+    height:10vmin;
+
+    
+}
+.axe{
+    background-image: url('./images/axe.png');
+    background-size: cover;
+
+}
+.pickaxe{
+    background-image: url('./images/pickaxe.png');
+    background-size: cover;
+}
+
+.shovel{
+    background-image: url('./images/shovel2.png');
+    background-size: cover;
     background-color: black;
-    width: 20vmin;
-    height: 100vmin;
-    justify-self: flex-end;
+}
+
+.selected-tool{
+    background-color: blue;
+}
+
+.wrong-tool{
+    background-color: red;
+}
+
+.inventory{
+    width: 5vmin;
+    height: 5vmin;
+    background-color: white;
+    margin-top: 10vmin;
 }
