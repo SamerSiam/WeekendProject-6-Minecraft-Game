@@ -1,0 +1,50 @@
+.flex-container{
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background-color:royalblue;
+}
+
+.game-matrix-grid{
+    display: grid;
+    background-color: white;
+    width: 100vmin;
+    height: 100vmin;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);  
+}
+
+.sky{
+    background-color: lightblue;
+}
+
+.cloud{
+    background-color: white;
+}
+.grass{
+    background-color:yellow;
+}
+
+.tree{
+background-color: green;
+}
+
+.trunk{
+    background-color: brown;
+}
+
+.rock{
+    background-color: gray;
+}
+
+.ground{
+    background-color: rgb(119, 8, 8);
+}
+
+.side-bar-flexColumn{
+    background-color: black;
+    width: 20vmin;
+    height: 100vmin;
+    justify-self: flex-end;
+}
