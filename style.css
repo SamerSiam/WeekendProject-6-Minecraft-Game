@@ -76,9 +76,7 @@ background-size: cover;
     display: block;
     margin-top: 2vmin;
     width:10vmin; 
-    height:10vmin;
-
-    
+    height:10vmin;  
 }
 .axe{
     background-image: url('./images/axe.png');
@@ -93,7 +91,7 @@ background-size: cover;
 .shovel{
     background-image: url('./images/shovel2.png');
     background-size: cover;
-    background-color: black;
+    
 }
 
 .selected-tool{
