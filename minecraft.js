@@ -5,38 +5,42 @@ const TRUNK_ELEMENT=5;
 const ROCK_ELEMENT=7;
 const GRASS_ELEMENT=8;
 const GROUND_ELEMENT=9;
+
 let minedTypes=[];
 let selectedTool={};
-let tileType='sky';
+
+
 
 /** define tool objects, each will have ID, name, elements */
 const tools=[
     {
         id:"1",
         name:"axe",
-        elements:["tree", "trunk"],
+        elements:[TREE_ELEMENT, TRUNK_ELEMENT],
         image:'./images/axe.png'
     },
     {
         id:"2",
         name:"pickaxe",
-        elements:["rock"],
+        elements:[ROCK_ELEMENT],
         image:'./images/pickaxe.png'
     },
 
     {
         id:"3",
         name:"shovel",
-        elements:["grass","ground"],
+        elements:[GRASS_ELEMENT,GROUND_ELEMENT],
         image:'./images/shovel.png'
     },
 
 ];
+
+// Initial board game matrix
 const initialMatrix = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1,0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1,1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0,1,0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0],
@@ -56,9 +60,9 @@ const initialMatrix = [
 ];
 const game=document.querySelector('.game-matrix-grid')
 const toolContainer= document.querySelector('.side-bar-flexColumn');
-// const toolPickaxe=document.querySelector('#pickaxe');
-const inventory=document.querySelector('.inventory');
-inventory.addEventListener('click', inventoryClick);
+let currentMatrix=copyMatrix();
+let currentResourceAvailable = SKY_ELEMENT;
+let isResourceSelected = false;
 
 // populate game board
 createGameboard();
@@ -66,46 +70,113 @@ createGameboard();
 // dynamically create tools from the objects above
 createTools();
 
+const inventory=createInventory();
+inventory.addEventListener('click', function(){
+    let className=inventory.className;
+    isResourceSelected = true;
+    selectedTool = undefined;
+})
+
+const resetButton=createReset();
+resetButton.addEventListener('click', resetGame);
+
+function resetGame(){
+    currentMatrix =copyMatrix();
+    currentResourceAvailable = SKY_ELEMENT;
+    isResourceSelected = false;
+    selectedTool = undefined;
+    game.innerHTML = '';
+    createGameboard();
+}
+      
 
 
 /**************************************FUNCTIONS************************************************** */
 function createGameboard()
 {
-
-for (let row=0; row< initialMatrix.length; row++){
-    for (let col=0; col< initialMatrix.length; col++)
+for (let row=0; row< currentMatrix.length; row++){
+    for (let col=0; col< currentMatrix.length; col++)
     {
-        switch(initialMatrix[row][col])
+        switch(currentMatrix[row][col])
         {
-            case 0: createElement('sky');
+            case 0: createBlock('sky', row, col, currentMatrix[row][col]);
             break;
-            case 1: createElement('cloud');
+            case 1: createBlock('cloud', row, col, currentMatrix[row][col]);
             break;
-            case 9: createElement('ground');
+            case 9: createBlock('ground', row, col, currentMatrix[row][col]);
             break;
-            case 8: createElement('grass');
+            case 8: createBlock('grass', row, col, currentMatrix[row][col]);
             break;
-            case 7: createElement('rock');
+            case 7: createBlock('rock', row, col, currentMatrix[row][col]);
             break;
             case 6:
             case 4: 
-            createElement('tree');
+            createBlock('tree', row, col, currentMatrix[row][col]);
             break;
-            case 5:createElement('trunk');
+            case 5:createBlock('trunk', row, col, currentMatrix[row][col]);
             break;
         }
     }
 }
 }
 
-function createElement(type){
+function createBlock(type, x, y, typeId){
     let blockDiv=document.createElement('div');
     blockDiv.classList.add(type);
+    blockDiv.dataset.x = x;
+    blockDiv.dataset.y = y;
+    blockDiv.dataset.type = typeId;
     blockDiv.addEventListener('click',gridClick);
     game.appendChild(blockDiv); 
+   
+}
+
+function gridClick(e)
+{
+    const element=e.target;
+    if(isResourceSelected){
+        element.setAttribute('class','');
+        currentMatrix[element.dataset.x][element.dataset.y] =currentResourceAvailable;
+        element.classList.add(mapResource(currentResourceAvailable));
+
+    } else if(selectedTool){
+        let resource = parseInt(element.dataset.type);
+        if(minedTypes.includes(resource)){
+            element.setAttribute('class','');
+            e.target.classList.add('sky');
+            inventory.setAttribute('class','');
+            inventory.classList.add('inventory');
+            inventory.classList.add(mapResource(resource));
+            currentResourceAvailable = resource;
+            currentMatrix[element.dataset.x][element.dataset.y] = SKY_ELEMENT;
+
+            //
+        } else {
+            let wrongTool=document.getElementById(selectedTool.id);
+            wrongTool.classList.add('wrong-tool');
+        }
+    }
+   
 }
 /************************************************************************************************* */
-
+function mapResource(resource)
+{
+    switch(resource) {
+        case 9: 
+           return 'ground';
+        break;
+        case 8: return'grass';
+        break;
+        case 7: return'rock';
+        break;
+        case 6:
+        case 4: 
+        return'tree';
+        break;
+        case 5:return'trunk';
+        break;  
+    }
+}
 function createTools()
 {
     tools.forEach((t)=>{
@@ -121,44 +192,42 @@ function createTools()
 
 function toolClick(e)
 {
-        e.target.classList.toggle('selected-tool');
-        const typeId=e.target.getAttribute("id");
-        selectedTool=tools.find(tool => tool.id===typeId );
-        minedTypes=selectedTool.elements;       
+     e.target.classList.toggle('selected-tool');
+     e.target.classList.remove('wrong-tool');
+     const typeId=e.target.getAttribute("id");
+     selectedTool=tools.find(tool => tool.id===typeId );
+     minedTypes=selectedTool.elements;
+     isResourceSelected = false;
 }
 /************************************************************************************** */
-function gridClick(e)
-{
-    // type='sky';
-    const className= e.target.getAttribute('class');
-    if (minedTypes.includes(className)){
-        e.target.setAttribute('class','');
-        e.target.classList.add(tileType);
-        inventory.classList.add(className);
-    }
-    else{
-        console.log(selectedTool);
-        // let wrongTool=document.getElementById(selectedTool.name);
-        // wrongTool.classList.add('wrong-tool');
-    }
-   
-}
+
 
 /************************************************************************************** */
-function inventoryClick(e)
-{
-    const className= e.target.getAttribute('class');
-    tileType=className;
 
+function createInventory()
+{
+    let inv=document.createElement('div');
+    inv.classList.add('inventory');
+    toolContainer.appendChild(inv);
+    return inv;
 }
-// toolPickaxe.addEventListener('click', ()=>{
-//     toolPickaxe.classList.remove('wrong-tool');
-//     toolPickaxe.classList.add('selected-tool');
-//     const typeId=toolPickaxe.getAttribute("data-id");
-//     selectedTool=tools.find(tool => tool.id===typeId );
-//     minedTypes=selectedTool.elements;
-//     // console.log(minedTypes);
-//     // console.log(selectedTool);
-// });
+
+
+function createReset()
+{
+    let reset=document.createElement('button');
+    reset.classList.add('button2');
+    reset.innerText= 'Reset Game';
+    toolContainer.appendChild(reset);
+    return reset;
+    
+}
+
+function copyMatrix()
+{
+    return initialMatrix.map((arr) => arr.slice());
+}
+
+
 
 
